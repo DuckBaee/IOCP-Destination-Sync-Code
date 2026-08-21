@@ -1,4 +1,4 @@
-# IOCP Destination Sync
+# TCP-Destination-Sync
 
 Unity 팀 프로젝트에서 제가 담당한 TCP 서버와 네트워크 클라이언트 코드를 정리한 저장소입니다.
 
