@@ -1,65 +1,37 @@
 # Code Ownership
 
-## 본인 Git 계정
+이 프로젝트는 팀 작업이었기 때문에 포트폴리오 저장소에는 제가 직접 작성한 네트워크 코드만 분리했습니다.
+
+## 제 Git 작성자 정보
 
 - `DuckBaee <49149806+DuckBaee@users.noreply.github.com>`
 - `Duckbaee <joy1655817@gmail.com>`
 
-두 작성자 표기는 동일한 본인 계정임을 확인했습니다.
+프로젝트 기간에 두 가지 이메일을 사용했지만 모두 제 Commit입니다.
 
-팀원 표기:
+## 포트폴리오에 포함한 코드
 
-- `HWAN612 <y66726379@gmail.com>`
-- `HWAN <152396489+HWAN612@users.noreply.github.com>`
-
-## 현재 main의 핵심 파일 blame
-
-| 파일 | Duckbaee | HWAN612 | 판정 |
-|---|---:|---:|---|
-| `Server/IOCPServerC#/Program.cs` | 332 | 0 | 본인 작성 확인 |
-| `NetworkManager.cs` | 226 | 2 | 공동 수정 |
-| `PlayerTextManager.cs` | 13 | 4 | 공동 수정 |
-| `PlayerMove.cs` | 0 | 70 | 타인 작성 |
-| `UnityMainThreadDispatcher.cs` | 56 | 0 | 본인 작성 확인, 미사용 |
-
-## Source 선별
-
-| 전시 파일 | 원본 Commit | 작성자 상태 | 선별 이유 |
-|---|---|---|---|
-| `Source/Server/Program.cs` | `deadb7d` | 본인 작성 확인 | 서버 전체 흐름 |
-| `Source/Client/NetworkManager.cs` | `deadb7d` | 본인 작성 확인 | 팀원 의존성 합류 전 최종 Client 코드 |
-| `Source/UI/PlayerTextManager.cs` | `deadb7d` | 본인 작성 확인 | 본인이 작성한 채팅 입력·Disconnect 연결 |
-
-## Evolution 선별
-
-| 전시 파일 | 원본 Commit | 작성자 상태 |
+| 파일 | 원본 Commit | 제가 구현한 내용 |
 |---|---|---|
-| `Evolution/01_PositionSnapshot/NetworkManager.cs` | `5bb4d1f` | 본인 작성 확인 |
-| `Evolution/02_DestinationSync/NetworkManager.cs` | `3926262` | 본인 작성 확인 |
+| `Source/Server/Program.cs` | `deadb7d` | 연결 수락, Player ID, 비동기 Receive/Send, Broadcast |
+| `Source/Client/NetworkManager.cs` | `deadb7d` | Client 연결, 이동 입력, 메시지 파싱, Player 생성·이동 |
+| `Source/UI/PlayerTextManager.cs` | `deadb7d` | 채팅 입력과 Disconnect UI 연결 |
+| `Evolution/01_PositionSnapshot/NetworkManager.cs` | `5bb4d1f` | 초기 위치 반복 전송 구조 |
+| `Evolution/02_DestinationSync/NetworkManager.cs` | `3926262` | 클릭 목적지 전달 구조 |
 
-## 제외한 팀원 코드
+`Source`와 `Evolution`의 C# 파일은 원본 Commit에서 수정하지 않고 복사했습니다.
 
-### `PlayerMove.cs`
+## 포함하지 않은 팀원 작업
 
-`4cd5b03`에서 HWAN612가 추가했습니다.
+`4cd5b03` 이후 추가된 다음 기능은 팀원 HWAN612의 작업이므로 이 저장소에 포함하지 않았습니다.
 
-포함 기능:
-
+- `PlayerMove.cs`
 - NavMeshAgent velocity 기반 이동 애니메이션
-- Sprite 좌우 반전
-- 말풍선 표시
-- 채팅 텍스트 자동 숨김
+- Sprite 방향 전환
+- 말풍선 표시와 자동 숨김
+- Player Prefab의 Animator와 표현 Asset
+- 로그인과 닉네임 기능
 
-네트워크 목적지 적용 코드는 `PlayerMove`가 아니라 본인 작성 `NetworkManager.UpdatePlayerPosition()`에 있으므로 이 파일을 제외해도 핵심 사례 설명에 문제가 없습니다.
+목적지 메시지를 받아 `NavMeshAgent.SetDestination()`을 호출하는 코드는 제가 작성한 `NetworkManager.UpdatePlayerPosition()`에 있습니다. 팀원의 표현 기능을 제외해도 이 저장소에 담은 이동 동기화 흐름은 그대로 확인할 수 있습니다.
 
-### 현재 Player Prefab
-
-`4cd5b03`에서 Animator, `PlayerMove`, 말풍선 GameObject와 표현 Asset이 추가됐습니다. 코드 전시 저장소에는 Scene과 Prefab을 포함하지 않습니다.
-
-### 로그인·닉네임
-
-`origin/Dev`의 Login Server, Local Nickname, World Login 관련 commit은 HWAN612 작성이므로 제외했습니다.
-
-## 미사용 본인 코드
-
-`UnityMainThreadDispatcher.cs`는 본인 작성이지만 실제 호출 지점이 발견되지 않아 제외했습니다. 작성량보다 현재 사례를 이해하는 데 필요한 코드만 선별했습니다.
+제가 작성한 `UnityMainThreadDispatcher.cs`도 실제 호출되는 지점이 없어 이번 저장소에서는 제외했습니다. 코드의 양보다 이동·채팅 동기화 과정에서 실제로 사용한 코드만 남겼습니다.

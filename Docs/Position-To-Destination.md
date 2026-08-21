@@ -1,21 +1,14 @@
 # Position Snapshot to Destination Sync
 
-## 결론
+이 프로젝트에서 가장 크게 다시 생각한 부분은 “Player 이동을 위해 무엇을 동기화해야 하는가”였습니다.
 
-이 변경의 핵심은 `SetDestination()`을 새로 도입한 것이 아닙니다. 수신 측에 이미 존재하던 `SetDestination()`의 의미에 맞춰 송신 데이터와 전송 시점을 바꾼 것입니다.
+## 처음 구현한 방식
 
-```text
-Current Position Snapshot
-→ Click Destination Command
-```
+- Commit: [`5bb4d1f`](https://github.com/DuckBaee/IOCP-Chat-Server/commit/5bb4d1f)
+- 날짜: 2024-06-06 13:48
+- 코드: [`Evolution/01_PositionSnapshot/NetworkManager.cs`](../Evolution/01_PositionSnapshot/NetworkManager.cs)
 
-## 01. Position Snapshot Prototype
-
-- Commit: `5bb4d1f`
-- 날짜: 2024-06-06 13:48:59 +09:00
-- 원본 파일: `Evolution/01_PositionSnapshot/NetworkManager.cs`
-
-Client는 매 프레임 `gameObject.transform.position`을 읽고 0.5초마다 서버에 전송했습니다.
+처음에는 Player의 현재 위치를 매 프레임 읽고 0.5초마다 서버로 보냈습니다.
 
 ```csharp
 Vector3 playerPosition;
@@ -36,22 +29,22 @@ IEnumerator SendPositionRoutine()
 }
 ```
 
-수신 Client는 초기 버전에서도 전달받은 좌표를 `NavMeshAgent.SetDestination(position)`에 사용했습니다.
-
-따라서 다음 의미 불일치가 있었습니다.
+하지만 수신 Client의 코드는 받은 좌표로 Transform을 보정하는 구조가 아니었습니다. 전달받은 좌표를 `NavMeshAgent.SetDestination(position)`에 넣어 이동 목적지로 사용하고 있었습니다.
 
 ```text
-Sender: current transform snapshot
-Receiver: navigation destination
+보내는 값: 현재 위치
+사용하는 값: 이동 목적지
 ```
 
-## 02. Destination Sync Decision
+전송 데이터와 수신 코드가 같은 좌표를 서로 다른 의미로 사용하고 있었습니다.
 
-- Commit: `3926262`
-- 날짜: 2024-06-06 17:08:14 +09:00
-- 원본 파일: `Evolution/02_DestinationSync/NetworkManager.cs`
+## 목적지를 보내도록 변경
 
-`playerPosition`, `sendInterval`, `SendPositionRoutine()`이 제거되고 클릭 이벤트가 추가됐습니다.
+- Commit: [`3926262`](https://github.com/DuckBaee/IOCP-Chat-Server/commit/3926262)
+- 날짜: 2024-06-06 17:08
+- 코드: [`Evolution/02_DestinationSync/NetworkManager.cs`](../Evolution/02_DestinationSync/NetworkManager.cs)
+
+클릭 이동 게임에서는 매 순간의 Transform보다 사용자가 선택한 목적지가 이동의 기준이라고 판단했습니다. 그래서 위치 전송 Coroutine을 제거하고 클릭했을 때 Raycast로 구한 좌표를 전송하도록 바꿨습니다.
 
 ```csharp
 void Update()
@@ -68,45 +61,23 @@ if(Physics.Raycast(ray, out hit))
 }
 ```
 
-`P:` 메시지의 형식은 유지됐지만 클릭 이동에서 payload의 의미가 바뀌었습니다.
+메시지 형식은 유지하면서 payload의 의미를 변경했습니다.
 
 ```text
 Before: P:ID,currentX,currentY,currentZ
 After:  P:ID,destinationX,destinationY,destinationZ
 ```
 
-## 변경 전후
+## 변경 결과
 
-| 항목 | Position Snapshot | Destination Sync |
+| 항목 | 변경 전 | 변경 후 |
 |---|---|---|
-| 전송 트리거 | 0.5초 Coroutine | Mouse click |
-| 데이터 출처 | `gameObject.transform.position` | `RaycastHit.point` |
-| 이동 중 전송 | 계속 전송 | 추가 클릭 전까지 없음 |
-| 수신 처리 | `SetDestination(position)` | `SetDestination(destination)` |
-| 서버 역할 | Broadcast | 캐시 후 Broadcast |
+| 전송 시점 | 0.5초 Coroutine | Mouse Click |
+| 전송 데이터 | 현재 Transform 위치 | `RaycastHit.point` |
+| 이동 중 추가 전송 | 반복 전송 | 다음 클릭 전까지 없음 |
+| Client 적용 | `SetDestination(position)` | `SetDestination(destination)` |
+| Server 역할 | Broadcast | 마지막 payload 저장 후 Broadcast |
 
-## 설명 가능한 결과
+이 변경으로 송신 데이터와 `SetDestination()`이 같은 의미를 갖게 됐습니다. 기존 Client–Server–Client Broadcast 구조는 그대로 사용하면서 동기화할 데이터만 게임의 이동 방식에 맞게 바꿨습니다.
 
-- 주기적인 현재 위치 전송을 입력 이벤트 기반 목적지 전달로 변경했습니다.
-- 송신 payload의 의미와 수신 측 NavMesh 처리 방식이 일치하게 됐습니다.
-- Client–Server–Client의 기존 Broadcast 경로는 재사용했습니다.
-
-## 설명하면 안 되는 결과
-
-- 트래픽을 최적화했다.
-- 성능이 향상됐다.
-- 네트워크 사용량이 특정 비율 감소했다.
-- 완전한 위치 동기화를 구현했다.
-- 서버 권위 이동을 구현했다.
-
-패킷 수, 바이트 사용량, 지연시간 측정 자료가 없기 때문입니다.
-
-## 검증 명령
-
-```powershell
-git show 5bb4d1f:Unity/GameServerPrograming_Finals/Assets/Scripts/Player/NetworkManager.cs
-
-git show 3926262:Unity/GameServerPrograming_Finals/Assets/Scripts/Player/NetworkManager.cs
-
-git diff 5bb4d1f 3926262 -- "Unity/GameServerPrograming_Finals/Assets/Scripts/Player/NetworkManager.cs"
-```
+패킷 수와 트래픽을 별도로 측정하지 않았기 때문에 성능 최적화로 판단하지는 않았습니다. 제가 해결한 문제는 전송량의 수치 개선보다 이동 구조와 동기화 데이터 사이의 의미 불일치를 바로잡은 것입니다.
