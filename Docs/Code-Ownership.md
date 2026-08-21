@@ -13,11 +13,11 @@
 
 | 파일 | 원본 Commit | 제가 구현한 내용 |
 |---|---|---|
-| `Source/Server/Program.cs` | `deadb7d` | 연결 수락, Player ID, 비동기 Receive/Send, Broadcast |
-| `Source/Client/NetworkManager.cs` | `deadb7d` | Client 연결, 이동 입력, 메시지 파싱, Player 생성·이동 |
-| `Source/UI/PlayerTextManager.cs` | `deadb7d` | 채팅 입력과 Disconnect UI 연결 |
-| `Evolution/01_PositionSnapshot/NetworkManager.cs` | `5bb4d1f` | 초기 위치 반복 전송 구조 |
-| `Evolution/02_DestinationSync/NetworkManager.cs` | `3926262` | 클릭 목적지 전달 구조 |
+| [`Source/Server/Program.cs`](../Source/Server/Program.cs#L11-L288) | `deadb7d` | 연결 수락, Player ID, 비동기 Receive/Send, Broadcast |
+| [`Source/Client/NetworkManager.cs`](../Source/Client/NetworkManager.cs#L13-L225) | `deadb7d` | Client 연결, 이동 입력, 메시지 파싱, Player 생성·이동 |
+| [`Source/UI/PlayerTextManager.cs`](../Source/UI/PlayerTextManager.cs#L6-L24) | `deadb7d` | 채팅 입력과 Disconnect UI 연결 |
+| [`Evolution/01_PositionSnapshot/NetworkManager.cs`](../Evolution/01_PositionSnapshot/NetworkManager.cs#L106-L130) | `5bb4d1f` | 초기 위치 반복 전송 구조 |
+| [`Evolution/02_DestinationSync/NetworkManager.cs`](../Evolution/02_DestinationSync/NetworkManager.cs#L104-L148) | `3926262` | 클릭 목적지 전달 구조 |
 
 `Source`와 `Evolution`의 C# 파일은 원본 Commit에서 수정하지 않고 복사했습니다.
 
@@ -32,6 +32,6 @@
 - Player Prefab의 Animator와 표현 Asset
 - 로그인과 닉네임 기능
 
-목적지 메시지를 받아 `NavMeshAgent.SetDestination()`을 호출하는 코드는 제가 작성한 `NetworkManager.UpdatePlayerPosition()`에 있습니다. 팀원의 표현 기능을 제외해도 이 저장소에 담은 이동 동기화 흐름은 그대로 확인할 수 있습니다.
+목적지 메시지를 받아 `NavMeshAgent.SetDestination()`을 호출하는 코드는 제가 작성한 [`NetworkManager.UpdatePlayerPosition()`](../Source/Client/NetworkManager.cs#L212-L217)에 있습니다. 팀원의 표현 기능을 제외해도 이 저장소에 담은 이동 동기화 흐름은 그대로 확인할 수 있습니다.
 
 제가 작성한 `UnityMainThreadDispatcher.cs`도 실제 호출되는 지점이 없어 이번 저장소에서는 제외했습니다. 코드의 양보다 이동·채팅 동기화 과정에서 실제로 사용한 코드만 남겼습니다.

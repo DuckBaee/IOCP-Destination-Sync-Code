@@ -6,7 +6,7 @@
 
 - Commit: [`5bb4d1f`](https://github.com/DuckBaee/IOCP-Chat-Server/commit/5bb4d1f)
 - 날짜: 2024-06-06 13:48
-- 코드: [`Evolution/01_PositionSnapshot/NetworkManager.cs`](../Evolution/01_PositionSnapshot/NetworkManager.cs)
+- 코드: [`SendPositionRoutine()` → `SetDestination()`](../Evolution/01_PositionSnapshot/NetworkManager.cs#L106-L130)
 
 처음에는 Player의 현재 위치를 매 프레임 읽고 0.5초마다 서버로 보냈습니다.
 
@@ -42,9 +42,9 @@ IEnumerator SendPositionRoutine()
 
 - Commit: [`3926262`](https://github.com/DuckBaee/IOCP-Chat-Server/commit/3926262)
 - 날짜: 2024-06-06 17:08
-- 코드: [`Evolution/02_DestinationSync/NetworkManager.cs`](../Evolution/02_DestinationSync/NetworkManager.cs)
+- 코드: [`GetClickedPosition()` → `SetDestination()`](../Evolution/02_DestinationSync/NetworkManager.cs#L104-L148)
 
-클릭 이동 게임에서는 매 순간의 Transform보다 사용자가 선택한 목적지가 이동의 기준이라고 판단했습니다. 그래서 위치 전송 Coroutine을 제거하고 클릭했을 때 Raycast로 구한 좌표를 전송하도록 바꿨습니다.
+클릭 이동 게임에서는 매 순간의 Transform보다 사용자가 선택한 목적지가 이동의 기준이라고 판단했습니다. 그래서 [위치 전송 Coroutine을 제거하고 클릭했을 때 Raycast로 구한 좌표를 전송](../Evolution/02_DestinationSync/NetworkManager.cs#L104-L142)하도록 바꿨습니다.
 
 ```csharp
 void Update()

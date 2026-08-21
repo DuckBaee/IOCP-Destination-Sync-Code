@@ -29,10 +29,10 @@
 - `hit.point`를 `P:` 메시지로 전송
 - 서버가 마지막 `P:` payload를 저장한 뒤 Broadcast
 
-두 Commit의 `NetworkManager.cs`를 `Evolution/01_PositionSnapshot`과 `Evolution/02_DestinationSync`에 각각 보관해 변경 전후 코드를 바로 비교할 수 있도록 구성했습니다.
+두 Commit의 `NetworkManager.cs`를 [Position Snapshot](../Evolution/01_PositionSnapshot/NetworkManager.cs#L106-L130)과 [Destination Sync](../Evolution/02_DestinationSync/NetworkManager.cs#L104-L148)에 각각 보관해 변경 전후 코드를 바로 비교할 수 있도록 구성했습니다.
 
 ## Source 기준점 — `deadb7d`
 
-`Source`에는 이동, 채팅, Disconnect가 함께 동작하던 `deadb7d` 시점의 코드를 담았습니다. 이 시점은 팀원이 작업한 캐릭터 애니메이션과 말풍선 기능이 합쳐지기 전이므로 제가 담당한 네트워크 흐름을 분리해서 보여줄 수 있습니다.
+`Source`에는 이동, 채팅, Disconnect가 함께 동작하던 `deadb7d` 시점의 [Client 코드](../Source/Client/NetworkManager.cs#L43-L217)와 [Server 코드](../Source/Server/Program.cs#L54-L270)를 담았습니다. 이 시점은 팀원이 작업한 캐릭터 애니메이션과 말풍선 기능이 합쳐지기 전이므로 제가 담당한 네트워크 흐름을 분리해서 보여줄 수 있습니다.
 
 원본 팀 저장소는 [DuckBaee/IOCP-Chat-Server](https://github.com/DuckBaee/IOCP-Chat-Server)에서 확인할 수 있습니다.

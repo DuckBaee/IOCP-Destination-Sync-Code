@@ -14,10 +14,10 @@ Client Input
 
 | 클래스 | 구현 내용 |
 |---|---|
-| `IOCPServer` | 연결 수락, Player ID 발급, Receive, 상태 저장, Broadcast, 연결 제거 |
-| `SocketAsyncEventArgsPool` | Receive와 Send에 사용할 `SocketAsyncEventArgs` 생성·재사용 |
-| `NetworkManager` | TCP 연결, 입력 수집, 메시지 송수신·파싱, Player 생성과 이동 적용 |
-| `PlayerTextManager` | 채팅 입력과 Disconnect UI 연결 |
+| [`IOCPServer`](../Source/Server/Program.cs#L11-L288) | 연결 수락, Player ID 발급, Receive, 상태 저장, Broadcast, 연결 제거 |
+| [`SocketAsyncEventArgsPool`](../Source/Server/Program.cs#L290-L332) | Receive와 Send에 사용할 `SocketAsyncEventArgs` 생성·재사용 |
+| [`NetworkManager`](../Source/Client/NetworkManager.cs#L13-L225) | TCP 연결, 입력 수집, 메시지 송수신·파싱, Player 생성과 이동 적용 |
+| [`PlayerTextManager`](../Source/UI/PlayerTextManager.cs#L6-L24) | 채팅 입력과 Disconnect UI 연결 |
 
 ## 클래스 관계
 
@@ -36,13 +36,13 @@ flowchart LR
 
 ## Connection과 Player ID
 
-1. `NetworkManager.ConnectToServer()`가 `127.0.0.1:8080`에 접속합니다.
-2. 서버의 `AcceptCompleted()`에서 Player ID를 발급합니다.
-3. 서버는 `clientIdMap`에 `Player ID → Socket` 관계를 저장합니다.
+1. [`NetworkManager.ConnectToServer()`](../Source/Client/NetworkManager.cs#L43-L61)가 `127.0.0.1:8080`에 접속합니다.
+2. 서버의 [`AcceptCompleted()`](../Source/Server/Program.cs#L54-L86)에서 Player ID를 발급합니다.
+3. 서버는 [`clientIdMap`](../Source/Server/Program.cs#L19-L31)에 `Player ID → Socket` 관계를 저장합니다.
 4. 서버가 `I:ID,0,0,0` 메시지를 Client에 보냅니다.
 5. Client는 첫 `I:` 메시지의 ID를 자신의 `playerID`로 사용합니다.
 6. Client가 자신의 Player를 생성하고 초기 좌표를 `P:`로 보냅니다.
-7. Client는 `Players`에 `Player ID → GameObject` 관계를 저장합니다.
+7. Client는 [`Players`](../Source/Client/NetworkManager.cs#L162-L179)에 `Player ID → GameObject` 관계를 저장합니다.
 
 Player ID를 기준으로 서버에서는 Socket을, Client에서는 GameObject를 찾을 수 있도록 구성했습니다.
 
@@ -65,7 +65,7 @@ sequenceDiagram
     Receiver->>Receiver: SetDestination
 ```
 
-마우스를 클릭하면 `Physics.Raycast`로 지면 좌표를 구하고 `P:` 메시지에 담아 보냅니다. 서버는 이 메시지를 저장한 뒤 모든 Client에 전달합니다. 송신 Client도 서버가 돌려준 메시지를 받은 다음 자신의 Player에 `SetDestination()`을 호출합니다.
+마우스를 클릭하면 [`Physics.Raycast`로 지면 좌표를 구하고](../Source/Client/NetworkManager.cs#L150-L159) `P:` 메시지에 담아 보냅니다. 서버는 [이 메시지를 저장](../Source/Server/Program.cs#L95-L120)한 뒤 [모든 Client에 전달](../Source/Server/Program.cs#L241-L255)합니다. 송신 Client도 서버가 돌려준 메시지를 받은 다음 자신의 Player에 [`SetDestination()`](../Source/Client/NetworkManager.cs#L212-L217)을 호출합니다.
 
 ## Chat
 

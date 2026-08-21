@@ -4,7 +4,7 @@
 
 ## TCP Framing
 
-Client는 `WriteLine()`으로 newline을 붙이지만 서버는 한 번의 `ReceiveAsync` 결과를 메시지 하나로 처리합니다.
+Client는 [`WriteLine()`](../Source/Client/NetworkManager.cs#L182-L200)으로 newline을 붙이지만 서버의 [`ProcessReceive()`](../Source/Server/Program.cs#L95-L138)는 한 번의 `ReceiveAsync` 결과를 메시지 하나로 처리합니다.
 
 ```text
 Receive 1: P:ID1,10.0,
@@ -24,7 +24,7 @@ Client별 누적 Buffer와 newline 단위 Frame 추출이 없기 때문에 메�
 
 ## Player Identity
 
-서버는 메시지 안의 Player ID와 실제로 메시지를 보낸 Socket을 비교하지 않습니다. 따라서 Client가 다른 ID를 넣은 이동·채팅·Disconnect 메시지를 보낼 수 있습니다.
+서버의 [메시지 처리 코드](../Source/Server/Program.cs#L95-L127)는 메시지 안의 Player ID와 실제로 메시지를 보낸 Socket을 비교하지 않습니다. 따라서 Client가 다른 ID를 넣은 이동·채팅·Disconnect 메시지를 보낼 수 있습니다.
 
 현재 구조에서는 연결 시 발급한 ID를 Socket 상태에 저장하고, Client가 보낸 ID가 아니라 서버가 관리하는 ID를 기준으로 처리해야 합니다.
 
@@ -53,7 +53,7 @@ Client별 누적 Buffer와 newline 단위 Frame 추출이 없기 때문에 메�
 
 ## Send Queue와 Partial Send
 
-서버는 Broadcast 시 Socket마다 바로 `SendAsync()`를 호출합니다.
+서버는 [Broadcast 시 Socket마다 바로 `SendAsync()`](../Source/Server/Program.cs#L225-L270)를 호출합니다.
 
 - Socket별 Send Queue와 backpressure 정책이 없습니다.
 - `ProcessSend()`에서 일부 Bytes만 전송됐을 때 나머지를 이어 보내지 않습니다.
